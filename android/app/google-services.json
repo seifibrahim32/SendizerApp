@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "78827706522",
+    "project_id": "sendizer-d7694",
+    "storage_bucket": "sendizer-d7694.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78827706522:android:4c5c6d5c1c220f22362723",
+        "android_client_info": {
+          "package_name": "com.example.social_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78827706522-g2lhne69fpur7g3qa0simpsa3nmge2jo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.social_app",
+            "certificate_hash": "628fd7fcbd02b3d943254a97e5d992740b4771dc"
+          }
+        },
+        {
+          "client_id": "78827706522-eb750si9omb7svj8n7cvmtne2c3o3udb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJszzy6Rys8k6j1sH-lGmn77tumsrTSCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78827706522-eb750si9omb7svj8n7cvmtne2c3o3udb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
