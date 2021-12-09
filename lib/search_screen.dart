@@ -10,7 +10,8 @@ class SearchScreen extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     return Container(
       child: Center(
-        child: Text("Search"),
+        child: Text("Search",
+            style: TextStyle(color :Colors.black)),
       ),
     );
   }
@@ -80,7 +81,9 @@ class SearchScreen extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Container();
+    return Container(
+      color: Color(0xFF031313),
+    );
     throw UnimplementedError();
   }
 

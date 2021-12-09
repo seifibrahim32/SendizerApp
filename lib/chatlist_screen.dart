@@ -26,7 +26,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
           setState((){
             current_index = index;
           });
-
         },
         currentIndex: current_index,
         unselectedLabelStyle: TextStyle(
