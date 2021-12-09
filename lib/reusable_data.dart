@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:social_app/registerscreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:flutter/cupertino.dart';
 
 Widget textFormField({
   required Widget? suffixIcon,
@@ -77,3 +80,31 @@ Widget textFormField({
       ),
     );
 
+
+final db = FirebaseFirestore.instance;
+
+ Widget Chatlist() => StreamBuilder<QuerySnapshot>(
+     stream: db.collection('users').snapshots(),
+     builder:  (context, snapshot){
+       if (!snapshot.hasData) {
+         return  Center(
+           child: CircularProgressIndicator(),
+         );
+       }
+       else {
+         print("size: ${snapshot.data!.docs.length}");
+         return ListView.separated(
+           itemCount: snapshot.data!.docs.length,
+           itemBuilder: (BuildContext context, int index) {
+             return Text("${snapshot.data!.docs[index]['email']}",
+               style: TextStyle(color:Colors.white),);
+           }, separatorBuilder: (BuildContext context, int index) {
+           return Container(
+             color: Color(0xFFFF0909),
+             height: 0.75,
+           );
+         },
+         );
+       }
+     }
+ );

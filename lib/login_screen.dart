@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:social_app/registerscreen.dart';
 import 'package:social_app/reusable_data.dart';
 
-import 'CRC_algorithm_model.dart';
-import 'chat_screen.dart';
+import 'chatlist_screen.dart';
 
 class LoginScreen extends StatefulWidget {
 

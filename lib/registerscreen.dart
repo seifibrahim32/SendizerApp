@@ -8,7 +8,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_app/reusable_data.dart';
 
-import 'chat_screen.dart';
+import 'chatlist_screen.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
