@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -25,6 +26,7 @@ TextEditingController newpassword = TextEditingController();
 final auth = FirebaseAuth.instance;
 
 class _RegisterScreenState extends State<RegisterScreen> {
+
   GlobalKey<FormState> regkey = GlobalKey<FormState>();
 
   TextEditingController newusername = TextEditingController();
@@ -41,7 +43,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String gender_registered = "Male";
 
-  File? imageFile;
+  File? imageFile , croppedImage;
+
+  //var image;
 
   Row addRadioButton(int btnValue, Gender title) {
     return Row(
@@ -69,6 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
@@ -110,8 +115,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Padding(
                     padding: const EdgeInsets.all(14.0),
                     child: Container(
-                        child: Column(children: [
-                      Stack(children: [
+                        child: Column(
+                            children: [
+                              Stack(children: [
                         Container(
                           decoration: BoxDecoration(
                               color: Color(0xFF575555),
@@ -203,19 +209,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     );
 
                                     setState(() {
-                                      print("${image!.path}");
+                                      print("ssrr ${image!.path}");
                                       imageFile = File(image.path);
                                     });
                                     print("Pressed");
-                                    File? croppedImage = await ImageCropper.cropImage(
+                                    croppedImage = await ImageCropper.cropImage(
                                       sourcePath: image!.path,
-                                      maxWidth: 20,
-                                      maxHeight: 20,
+                                      maxWidth: 150,
+                                      maxHeight: 150,
+                                        aspectRatioPresets: [
+                                          CropAspectRatioPreset.square,
+                                        ],
+                                        androidUiSettings: AndroidUiSettings(
+                                          hideBottomControls: true,
+                                            toolbarColor: Colors.deepOrange,
+                                            toolbarWidgetColor: Colors.white,
+                                            initAspectRatio: CropAspectRatioPreset.original,
+                                            lockAspectRatio: false),
+                                        iosUiSettings: IOSUiSettings(
+                                          minimumAspectRatio: 1.0,
+                                        )
                                     );
                                     if (croppedImage != null) {
-                                      imageFile = croppedImage;
-                                      setState(() {});
+                                      setState(() {
+                                        imageFile = croppedImage;
+                                      });
                                     }
+
                                   },
                                   child: Icon(Icons.add),
                                 )
@@ -225,22 +245,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         )
                       ]),
                       SizedBox(height: 14),
-                      Card(
-                        child: imageFile == null? Container() :  Column(
-                          children: [
-                            Text(
-                              "Your profile picture",
-                              style: TextStyle(
-                                  fontFamily: "SF",
-                                  color: Colors.black,
-                                  fontSize: 16),
-                            ),
-                            Image.file(imageFile!),
-                          ],
-                        )
+                      imageFile == null ? Container() : Column(
+                        children: [
+                          Text(
+                            "Your profile picture",
+                            style: TextStyle(
+                                fontFamily: "SF",
+                                color: Colors.black,
+                                fontSize: 16),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(64.0),
+                                child: Image.file(croppedImage!)),
+                          ),
+                        ],
                       ),
                       GestureDetector(
                         onTap: () async {
+
+
                           if (regkey.currentState!.validate()) {
                             FocusScopeNode currentFocus =
                                 FocusScope.of(context);
@@ -270,13 +295,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   "image" : "hi"
                                 });
                               });
-
                               Navigator.pushAndRemoveUntil(context,  PageRouteBuilder(
                                 pageBuilder: (c, a1, a2) => ChatListScreen(user_name: newusername.text),
                                 transitionsBuilder: (c, anim, a2, child) => FadeTransition(opacity: anim, child: child),
                                 transitionDuration: Duration(milliseconds: 2000),
                               ), (route) => false);
 
+                              Reference reference = FirebaseStorage.instance.ref().child("image: "
+                                  + DateTime.now().toString());
+
+                              UploadTask uploadTask = reference.putFile(croppedImage!);
+
+                              uploadTask.then((res) {
+                                res.ref.getDownloadURL();
+                                print('File Uploaded');
+                              });
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
                                 content: Text(

@@ -19,6 +19,9 @@ class ConverterScreen extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme : ThemeData(
+        backgroundColor: Colors.grey
+      ),
       debugShowCheckedModeBanner: false,
       home: Splash_Screen(),
     );

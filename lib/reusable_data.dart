@@ -93,17 +93,41 @@ final db = FirebaseFirestore.instance;
        }
        else {
          print("size: ${snapshot.data!.docs.length}");
-         return ListView.separated(
-           itemCount: snapshot.data!.docs.length,
-           itemBuilder: (BuildContext context, int index) {
-             return Text("${snapshot.data!.docs[index]['email']}",
-               style: TextStyle(color:Colors.white),);
-           }, separatorBuilder: (BuildContext context, int index) {
-           return Container(
-             color: Color(0xFFFF0909),
-             height: 0.75,
-           );
-         },
+         return Padding(
+           padding: const EdgeInsets.all(13.0),
+           child: ListView.separated(
+             itemCount: snapshot.data!.docs.length,
+             itemBuilder: (BuildContext context, int index) {
+               return Row(
+                 children: [
+                   Padding(
+                     padding: const EdgeInsets.all(8.0),
+                     child: Stack(
+                       alignment: Alignment.bottomRight,
+                       children: [
+                         CircleAvatar(
+                         child: Image.network("https://www.google.com/"
+                             "images/branding/googlelogo/1x/googlelog"
+                             "o_light_color_272x92dp.png"),
+                       ),
+                         CircleAvatar(
+                           radius: 5,
+                           backgroundColor: Colors.green
+                         )
+                       ]
+                     ),
+                   ),
+                   Text("${snapshot.data!.docs[index]['username']}",
+                     style: TextStyle(color:Colors.white),),
+                 ],
+               );
+             }, separatorBuilder: (BuildContext context, int index) {
+             return Container(
+               color: Color(0xFFFF0909),
+               height: 0.75,
+             );
+           },
+           ),
          );
        }
      }

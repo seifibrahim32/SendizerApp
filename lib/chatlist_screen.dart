@@ -37,9 +37,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
           BottomNavigationBarItem(
               label: "People",
               tooltip:"People" ,
-              icon: Icon(Icons.supervised_user_circle
-              )),
-
+              icon: Icon(Icons.supervised_user_circle)
+          ),
           BottomNavigationBarItem(
               label: "Settings",
               tooltip:"Settings" ,
