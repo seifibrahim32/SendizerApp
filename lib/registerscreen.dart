@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_app/reusable_data.dart';
-
 import 'chatlist_screen.dart';
 import 'login_screen.dart';
 
@@ -43,9 +42,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String gender_registered = "Male";
 
-  File? imageFile , croppedImage;
+  var downloadLink ;
 
-  //var image;
+  File? imageFile , croppedImage;
 
   Row addRadioButton(int btnValue, Gender title) {
     return Row(
@@ -111,7 +110,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               fontWeight: FontWeight.normal)),
                     ],
                   ),
-                  SizedBox(height: 54),
+                  SizedBox(height: 34),
+                  imageFile == null ? Container() : Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(64.0),
+                            child: Image.file(croppedImage!)),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
                   Padding(
                     padding: const EdgeInsets.all(14.0),
                     child: Container(
@@ -126,9 +136,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           width: 350,
                           height: 290,
                         ),
+
                         Form(
                           key: regkey,
-                          child: Column(children: [
+                          child: Column(
+                              children: [
+
                             textFormField(
                                 suffixIcon: null,
                                 hintText: "Username",
@@ -235,7 +248,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         imageFile = croppedImage;
                                       });
                                     }
-
                                   },
                                   child: Icon(Icons.add),
                                 )
@@ -245,27 +257,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         )
                       ]),
                       SizedBox(height: 14),
-                      imageFile == null ? Container() : Column(
-                        children: [
-                          Text(
-                            "Your profile picture",
-                            style: TextStyle(
-                                fontFamily: "SF",
-                                color: Colors.black,
-                                fontSize: 16),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(64.0),
-                                child: Image.file(croppedImage!)),
-                          ),
-                        ],
-                      ),
                       GestureDetector(
                         onTap: () async {
-
-
                           if (regkey.currentState!.validate()) {
                             FocusScopeNode currentFocus =
                                 FocusScope.of(context);
@@ -273,10 +266,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             if (!currentFocus.hasPrimaryFocus) {
                               currentFocus.unfocus();
                             }
-                            print("eeeee${newusername.text.trim()}");
+                            print("${newusername.text.trim()}");
                             print("${newpassword.text.trim()}");
 
                             try {
+                              QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .where("username", isEqualTo: newusername.text.toString())
+                                  .get();
+
+                              if(snapshot.size != 0 && snapshot.docs[0]['username'] == newusername.text) {
+                                throw Exception('Username is already registered');
+                              }
                               await auth
                                   .createUserWithEmailAndPassword(
                                       email: email.text.trim(),
@@ -285,14 +286,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 CollectionReference users = FirebaseFirestore
                                     .instance
                                     .collection('users');
+                                Reference reference = FirebaseStorage.instance.ref().child("image: "
+                                    + DateTime.now().toString());
 
+                                UploadTask uploadTask = reference.putFile(croppedImage!);
+
+                                uploadTask.then((res) async {
+                                  downloadLink = await res.ref.getDownloadURL();
+                                  print(downloadLink.toString());
+                                  print('File Uploaded');
+                                });
                                 users.add({
                                   "email": email.text.trim().toString(),
                                   "gender": gender_registered,
                                   "password":
                                       confirm_password.text.trim().toString(),
-                                  "username": newusername.text.trim().toString(),
-                                  "image" : "hi"
+                                  "profileImage" : downloadLink.toString(),
+                                  "username": newusername.text.trim().toString()
                                 });
                               });
                               Navigator.pushAndRemoveUntil(context,  PageRouteBuilder(
@@ -301,15 +311,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 transitionDuration: Duration(milliseconds: 2000),
                               ), (route) => false);
 
-                              Reference reference = FirebaseStorage.instance.ref().child("image: "
-                                  + DateTime.now().toString());
-
-                              UploadTask uploadTask = reference.putFile(croppedImage!);
-
-                              uploadTask.then((res) {
-                                res.ref.getDownloadURL();
-                                print('File Uploaded');
-                              });
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
                                 content: Text(
@@ -320,6 +321,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(SnackBar(
                                 content: Text("${error.message}"),
+                                duration: Duration(seconds: 5),
+                              ));
+                            } on Exception catch (error) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text("${error.toString().split(":")[1]}"),
                                 duration: Duration(seconds: 5),
                               ));
                             }
