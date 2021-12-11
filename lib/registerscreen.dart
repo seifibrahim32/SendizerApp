@@ -72,7 +72,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-
         appBar: AppBar(
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
@@ -111,13 +110,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                   SizedBox(height: 34),
-                  imageFile == null ? Container() : Column(
+                  imageFile == null ? ClipRRect(
+                      borderRadius: BorderRadius.circular(64.0),
+                      child: Image.asset(
+                          "assets/blank-profile.webp",
+                          scale:10.0
+                      )) : Column(
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(64.0),
-                            child: Image.file(croppedImage!)),
+                            child: Image.file(imageFile!)),
                       ),
                     ],
                   ),
@@ -132,16 +136,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           decoration: BoxDecoration(
                               color: Color(0xFF575555),
                               border: Border.all(color: Colors.transparent),
-                              borderRadius: BorderRadius.circular(7)),
+                              borderRadius: BorderRadius.circular(7)
+                          ),
                           width: 350,
                           height: 290,
                         ),
-
                         Form(
                           key: regkey,
                           child: Column(
                               children: [
-
                             textFormField(
                                 suffixIcon: null,
                                 hintText: "Username",
@@ -180,7 +183,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 type: "confirm_password",
                                 controller: confirm_password,
                                 isHidden: true,
-                                suffixIcon: null),
+                                suffixIcon: null
+                            ),
                             Container(
                                 width: 350, height: 1, color: Colors.grey),
                             Row(children: [
@@ -275,8 +279,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   .where("username", isEqualTo: newusername.text.toString())
                                   .get();
 
-                              if(snapshot.size != 0 && snapshot.docs[0]['username'] == newusername.text) {
-                                throw Exception('Username is already registered');
+                              if(snapshot.size != 0) {
+                                for ( int i = 0 ; i < snapshot.docs.length ; i++){
+                                  if(snapshot.docs[i]['username'] == newusername.text){
+                                    throw Exception('Username is already registered');}
+                                }
                               }
                               await auth
                                   .createUserWithEmailAndPassword(
@@ -286,24 +293,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 CollectionReference users = FirebaseFirestore
                                     .instance
                                     .collection('users');
-                                Reference reference = FirebaseStorage.instance.ref().child("image: "
+
+                                Reference reference = FirebaseStorage.instance.ref().child("images/"
                                     + DateTime.now().toString());
 
+                                print(croppedImage!.path);
                                 UploadTask uploadTask = reference.putFile(croppedImage!);
 
                                 uploadTask.then((res) async {
                                   downloadLink = await res.ref.getDownloadURL();
                                   print(downloadLink.toString());
                                   print('File Uploaded');
+                                  users.add({
+                                    "email": email.text.trim().toString(),
+                                    "gender": gender_registered,
+                                    "password":
+                                    confirm_password.text.trim().toString(),
+                                    "profileImage" : downloadLink.toString(),
+                                    "username": newusername.text.trim().toString()
+                                  });
                                 });
-                                users.add({
-                                  "email": email.text.trim().toString(),
-                                  "gender": gender_registered,
-                                  "password":
-                                      confirm_password.text.trim().toString(),
-                                  "profileImage" : downloadLink.toString(),
-                                  "username": newusername.text.trim().toString()
-                                });
+
                               });
                               Navigator.pushAndRemoveUntil(context,  PageRouteBuilder(
                                 pageBuilder: (c, a1, a2) => ChatListScreen(user_name: newusername.text),
@@ -315,7 +325,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   .showSnackBar(SnackBar(
                                 content: Text(
                                     'Sucessfully Registered'),
-                                duration: Duration(seconds: 5),
+                                duration: Duration(seconds: 2),
                               ));
                             } on FirebaseAuthException catch (error) {
                               ScaffoldMessenger.of(context)

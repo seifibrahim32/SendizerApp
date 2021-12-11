@@ -82,7 +82,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       ),
         body : Container(
           color: Color(0xFF312F2F),
-          child : current_index == 0 ? Chatlist() : SettingsScreen()
+          child : current_index == 0 ? Chatlist(username: widget.user_name) : SettingsScreen()
         ),
 
     );

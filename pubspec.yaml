@@ -65,6 +65,7 @@ flutter:
 
   assets:
     - assets/logo.png
+    - assets/blank-profile.webp
 
   fonts:
      - family: SF

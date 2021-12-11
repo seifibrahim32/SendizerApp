@@ -83,7 +83,7 @@ Widget textFormField({
 
 final db = FirebaseFirestore.instance;
 
- Widget Chatlist() => StreamBuilder<QuerySnapshot>(
+ Widget Chatlist ({required String username}) => StreamBuilder<QuerySnapshot>(
      stream: db.collection('users').snapshots(),
      builder:  (context, snapshot){
        if (!snapshot.hasData) {
@@ -98,23 +98,52 @@ final db = FirebaseFirestore.instance;
            child: ListView.separated(
              itemCount: snapshot.data!.docs.length,
              itemBuilder: (BuildContext context, int index) {
-               return Row(
+               return (snapshot.data!.docs[index]['username'] == username)?Container():Row(
                  children: [
                    Padding(
                      padding: const EdgeInsets.all(8.0),
-                     child: Stack(
-                       alignment: Alignment.bottomRight,
-                       children: [
-                         CircleAvatar(
-                         child: Image.network("https://www.google.com/"
-                             "images/branding/googlelogo/1x/googlelog"
-                             "o_light_color_272x92dp.png"),
+                     child: Container(
+                       child: Stack(
+                         alignment: Alignment.topRight,
+                         children: [
+                           ClipRRect(
+                             borderRadius: BorderRadius.all(
+                                 Radius.circular(32)
+                             ),
+                             child: CircleAvatar(
+                               radius: 30,
+                               child:snapshot.
+                               data!.docs[index]['profileImage'] == null ? Image.asset(
+                                   "assets/blank-profile.webp",
+                                   scale:10.0
+                               ) :Image.network(snapshot.
+                       data!.docs[index]['profileImage']),
+                         ),
+                           ),
+                           Stack(
+                             alignment : Alignment.center,
+                             children :[
+                               Container(
+                                 width : 20,
+                                 height: 20,
+                                decoration: BoxDecoration(
+                                    color : Color(0xFF312F2F),
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(14) ,
+                                    bottomRight: Radius.circular(14),
+                                    topLeft: Radius.circular(3),
+                                    topRight: Radius.circular(14),
+                                  )
+                                ),
+                               ),
+                               CircleAvatar(
+                                   radius: 8,
+                                   backgroundColor: Colors.green
+                               )
+                             ]
+                           )
+                         ]
                        ),
-                         CircleAvatar(
-                           radius: 5,
-                           backgroundColor: Colors.green
-                         )
-                       ]
                      ),
                    ),
                    Text("${snapshot.data!.docs[index]['username']}",
