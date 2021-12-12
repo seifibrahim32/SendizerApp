@@ -5,6 +5,7 @@ import 'package:social_app/reusable_data.dart';
 import 'package:splashscreen/splashscreen.dart';
 
 import 'CRC_algorithm_model.dart';
+import 'chat_screen_user.dart';
 import 'login_screen.dart';
 
 void main() async {
@@ -23,7 +24,7 @@ class ConverterScreen extends StatelessWidget{
         backgroundColor: Colors.grey
       ),
       debugShowCheckedModeBanner: false,
-      home: Splash_Screen(),
+      home: ChatUserScreen(),
     );
   }
 }
