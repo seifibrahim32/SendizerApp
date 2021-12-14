@@ -29,7 +29,8 @@ class LoginScreenState extends State<LoginScreen> {
 
   }
 
-  Widget loginScreen({required BuildContext context,required TextEditingController username  ,
+  Widget loginScreen({required BuildContext context,
+    required TextEditingController username,
     required TextEditingController password}) => SingleChildScrollView(
     child:
     Form(
@@ -142,13 +143,13 @@ class LoginScreenState extends State<LoginScreen> {
                       .get();
 
                   if(snapshot.size != 0 && snapshot.docs[0]['password'] == password.text) {
-                    FirebaseAuth.instance.signInWithEmailAndPassword(
+                    UserCredential user = await FirebaseAuth.instance.signInWithEmailAndPassword(
                         email: snapshot.docs[0]['email'],
                         password: snapshot.docs[0]['password']
                     );
                     print("Signed");
                     Navigator.pushAndRemoveUntil(context,  PageRouteBuilder(
-                      pageBuilder: (c, a1, a2) => ChatListScreen(user_name: username.text),
+                      pageBuilder: (c, a1, a2) => ChatListScreen(user_name: username.text,uId: user.user!.uid),
                       transitionsBuilder: (c, anim, a2, child) => FadeTransition(opacity: anim, child: child),
                       transitionDuration: Duration(milliseconds: 2000),
                     ), (route) => false);
@@ -161,7 +162,7 @@ class LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(
                             fontFamily : "SN"
                             )),
-                            duration: const Duration(seconds: 5)),
+                            duration: const Duration(seconds: 2)),
                         );
                   }
                   else {
@@ -172,7 +173,7 @@ class LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                               fontFamily : "SN"
                           ) ),
-                          duration: const Duration(seconds: 5)),
+                          duration: const Duration(seconds: 2)),
                     );
                   }
 
@@ -180,7 +181,7 @@ class LoginScreenState extends State<LoginScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text("${error.message}"),
-                          duration: Duration(seconds: 5),
+                          duration: Duration(seconds: 2),
                         )
                     );
                   }
@@ -222,7 +223,7 @@ class LoginScreenState extends State<LoginScreen> {
                 Navigator.pushAndRemoveUntil(context,  PageRouteBuilder(
                   pageBuilder: (c, a1, a2) => RegisterScreen(),
                   transitionsBuilder: (c, anim, a2, child) => FadeTransition(opacity: anim, child: child),
-                  transitionDuration: Duration(milliseconds: 2000),
+                  transitionDuration: Duration(milliseconds: 20),
                 ), (route) => false);
               },
               child: Text("Create an account.",

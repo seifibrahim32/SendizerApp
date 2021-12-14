@@ -7,9 +7,9 @@ import 'package:social_app/search_screen.dart';
 import 'package:social_app/settings_screen.dart';
 
 class ChatListScreen extends StatefulWidget{
-  final String user_name;
+  final String user_name,uId;
 
-  const ChatListScreen({Key? key,required this.user_name}) : super(key: key);
+  const ChatListScreen({Key? key,required this.user_name,required this.uId}) : super(key: key);
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
@@ -17,7 +17,8 @@ class ChatListScreen extends StatefulWidget{
 
 class _ChatListScreenState extends State<ChatListScreen> {
 
-  int current_index = 0 ;
+  int current_index = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,9 +83,17 @@ class _ChatListScreenState extends State<ChatListScreen> {
       ),
         body : Container(
           color: Color(0xFF312F2F),
-          child : current_index == 0 ? Chatlist(username: widget.user_name) : SettingsScreen()
+          child : current_index == 0 ?
+          Chatlist(username: widget.user_name, uId : widget.uId)
+              :
+          SettingsScreen()
         ),
 
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

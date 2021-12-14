@@ -285,38 +285,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     throw Exception('Username is already registered');}
                                 }
                               }
-                              await auth
+
+                              UserCredential userCredential = await auth
                                   .createUserWithEmailAndPassword(
                                       email: email.text.trim(),
-                                      password: newpassword.text.trim())
-                                  .then((value) {
-                                CollectionReference users = FirebaseFirestore
-                                    .instance
-                                    .collection('users');
+                                      password: newpassword.text.trim()
+                              );
+                              print(" uid ${userCredential.user!.uid}");
 
-                                Reference reference = FirebaseStorage.instance.ref().child("images/"
-                                    + DateTime.now().toString());
+                              DocumentReference<Map<String, dynamic>> users = FirebaseFirestore
+                                  .instance
+                                  .collection('users')
+                                  .doc(userCredential.user!.uid);
+                              Reference reference = FirebaseStorage.instance.ref().child("images/"
+                                  + DateTime.now().toString());
 
-                                print(croppedImage!.path);
-                                UploadTask uploadTask = reference.putFile(croppedImage!);
+                              print(croppedImage!.path);
+                              UploadTask uploadTask = reference.putFile(croppedImage!);
 
-                                uploadTask.then((res) async {
-                                  downloadLink = await res.ref.getDownloadURL();
-                                  print(downloadLink.toString());
-                                  print('File Uploaded');
-                                  users.add({
-                                    "email": email.text.trim().toString(),
-                                    "gender": gender_registered,
-                                    "password":
-                                    confirm_password.text.trim().toString(),
-                                    "profileImage" : downloadLink.toString(),
-                                    "username": newusername.text.trim().toString()
-                                  });
+                              uploadTask.then((res) async {
+                                downloadLink = await res.ref.getDownloadURL();
+                                print(downloadLink.toString());
+                                print('File Uploaded');
+                                users.set({
+                                  "email": email.text.trim().toString(),
+                                  "gender": gender_registered,
+                                  "password":
+                                  confirm_password.text.trim().toString(),
+                                  "profileImage" : downloadLink.toString(),
+                                  "username": newusername.text.trim().toString(),
+                                  "uId" : userCredential.user!.uid
                                 });
-
                               });
+
+                              await FirebaseFirestore
+                                  .instance
+                                  .collection('users')
+                                  .doc(userCredential.user!.uid)
+                                  .collection(
+                                  "chats")
+                                  .doc(userCredential.user!.uid)
+                                  .collection("messages")
+                                  .add({});
+
                               Navigator.pushAndRemoveUntil(context,  PageRouteBuilder(
-                                pageBuilder: (c, a1, a2) => ChatListScreen(user_name: newusername.text),
+                                pageBuilder: (c, a1, a2) => ChatListScreen(user_name: newusername.text,
+                                    uId : userCredential.user!.uid),
                                 transitionsBuilder: (c, anim, a2, child) => FadeTransition(opacity: anim, child: child),
                                 transitionDuration: Duration(milliseconds: 2000),
                               ), (route) => false);

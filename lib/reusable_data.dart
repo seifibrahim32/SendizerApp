@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/cupertino.dart';
 
+import 'chat_screen_user.dart';
+
 Widget textFormField({
   required Widget? suffixIcon,
   required String hintText,
@@ -83,7 +85,7 @@ Widget textFormField({
 
 final db = FirebaseFirestore.instance;
 
- Widget Chatlist ({required String username}) => StreamBuilder<QuerySnapshot>(
+ Widget Chatlist ({required String username,required String uId}) => StreamBuilder<QuerySnapshot>(
      stream: db.collection('users').snapshots(),
      builder:  (context, snapshot){
        if (!snapshot.hasData) {
@@ -98,61 +100,99 @@ final db = FirebaseFirestore.instance;
            child: ListView.separated(
              itemCount: snapshot.data!.docs.length,
              itemBuilder: (BuildContext context, int index) {
-               return (snapshot.data!.docs[index]['username'] == username)?Container():Row(
-                 children: [
-                   Padding(
-                     padding: const EdgeInsets.all(8.0),
-                     child: Container(
-                       child: Stack(
-                         alignment: Alignment.topRight,
-                         children: [
-                           ClipRRect(
-                             borderRadius: BorderRadius.all(
-                                 Radius.circular(32)
-                             ),
-                             child: CircleAvatar(
-                               radius: 30,
-                               child:snapshot.
-                               data!.docs[index]['profileImage'] == null ? Image.asset(
-                                   "assets/blank-profile.webp",
-                                   scale:10.0
-                               ) :Image.network(snapshot.
-                       data!.docs[index]['profileImage']),
-                         ),
-                           ),
-                           Stack(
-                             alignment : Alignment.center,
-                             children :[
-                               Container(
-                                 width : 20,
-                                 height: 20,
-                                decoration: BoxDecoration(
-                                    color : Color(0xFF312F2F),
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(14) ,
-                                    bottomRight: Radius.circular(14),
-                                    topLeft: Radius.circular(3),
-                                    topRight: Radius.circular(14),
-                                  )
-                                ),
+               print("current uId ${uId}");
+               snapshot.data!.docs.forEach((doc){
+                   if (doc['uId'].toString() != uId) {
+                     print("other uIds ${doc['uId']}");
+                     print(doc['uId'].toString() != uId);
+                     FirebaseFirestore.instance.collection('users')
+                         .doc(uId)
+                         .collection('chats')
+                         .doc(doc['uId']);
+                 }
+               });
+               return (snapshot.data!.docs[index]['username'] == username)?
+               Container():
+               Material(
+                 animationDuration: Duration(microseconds: 1),
+                 child: InkWell(
+                   hoverColor: Colors.green,
+                   onTap: (){
+                     Navigator.of(context).push(
+                         MaterialPageRoute(
+                             builder: (context) => ChatUserScreen(
+                                 username : snapshot.data!.docs[index]['username'],
+                                 profileURL : snapshot.data!.docs[index]['profileImage'],
+                                 senderuId : uId,
+                                 receiveruId : snapshot.data!.docs[index]['uId']
+                             )
+                         )
+                     );
+                   },
+                   child: Ink(
+                     color : Color(0xFF312F2F),
+                     child: Row(
+                       children: [
+                         Padding(
+                           padding: const EdgeInsets.all(8.0),
+                           child: Container(
+                             child: Stack(
+                               alignment: Alignment.topRight,
+                               children: [
+                                 ClipRRect(
+                                   borderRadius: BorderRadius.all(
+                                       Radius.circular(32)
+                                   ),
+                                   child: CircleAvatar(
+                                     radius: 30,
+                                     child:snapshot.
+                                     data!.docs[index]['profileImage'] == null ? Image.asset(
+                                         "assets/blank-profile.webp",
+                                         scale:10.0
+                                     ) :Image.network(snapshot.
+                             data!.docs[index]['profileImage']),
                                ),
-                               CircleAvatar(
-                                   radius: 8,
-                                   backgroundColor: Colors.green
-                               )
-                             ]
-                           )
-                         ]
-                       ),
+                                 ),
+                                 Stack(
+                                   alignment : Alignment.center,
+                                   children :[
+                                     Container(
+                                       width : 20,
+                                       height: 20,
+                                      decoration: BoxDecoration(
+                                          color : Color(0xFF312F2F),
+                                        borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(14) ,
+                                          bottomRight: Radius.circular(14),
+                                          topLeft: Radius.circular(3),
+                                          topRight: Radius.circular(14),
+                                        )
+                                      ),
+                                     ),
+                                     CircleAvatar(
+                                         radius: 8,
+                                         backgroundColor: Colors.green
+                                     )
+                                   ]
+                                 )
+                               ]
+                             ),
+                           ),
+                         ),
+                         Text("${snapshot.data!.docs[index]['username']}",
+                           style: TextStyle(
+                               fontFamily : "SFn",
+                               color:Colors.white),),
+                       ],
                      ),
                    ),
-                   Text("${snapshot.data!.docs[index]['username']}",
-                     style: TextStyle(color:Colors.white),),
-                 ],
+                 ),
                );
-             }, separatorBuilder: (BuildContext context, int index) {
+             },
+             separatorBuilder: (BuildContext context, int index) {
              return Container(
-               color: Color(0xFFFF0909),
+               width : 5,
+               color: Color(0xFF5A4F4F),
                height: 0.75,
              );
            },
@@ -161,3 +201,54 @@ final db = FirebaseFirestore.instance;
        }
      }
  );
+
+
+
+Widget buildMessage({required String message}) => Align(
+  alignment: AlignmentDirectional.centerStart,
+  child: Container(
+      padding: EdgeInsets.symmetric(vertical : 5, horizontal : 10),
+      decoration:  BoxDecoration(
+          color: Colors.grey,
+          borderRadius :BorderRadiusDirectional.only(
+              bottomEnd : Radius.circular(10),
+              topEnd : Radius.circular(10),
+              bottomStart: Radius.circular(0),
+              topStart: Radius.circular(10)
+          )
+      ),
+      child : Text(message,
+          style: TextStyle(
+              fontSize: 14,
+              fontFamily: "SFn",
+              color: Colors.white,
+              fontWeight: FontWeight.normal)
+      )
+  ),
+);
+
+
+
+
+Widget buildMyMessage({required String message}) => Align(
+  alignment: AlignmentDirectional.centerEnd,
+  child: Container(
+      padding: EdgeInsets.symmetric(vertical : 5, horizontal : 10),
+      decoration:  BoxDecoration(
+          color: Colors.grey,
+          borderRadius :BorderRadiusDirectional.only(
+              bottomEnd : Radius.circular(0),
+              topEnd : Radius.circular(10),
+              bottomStart: Radius.circular(10),
+              topStart: Radius.circular(10)
+          )
+      ),
+      child : Text(message,
+          style: TextStyle(
+              fontSize: 14,
+              fontFamily: "SFn",
+              color: Colors.white,
+              fontWeight: FontWeight.normal)
+      )
+  ),
+);
