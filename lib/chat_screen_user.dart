@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_conditional_rendering/conditional.dart';
 import 'package:social_app/reusable_data.dart';
 
+import 'package:http/http.dart' as http;
 import 'message_model.dart';
 
 class ChatUserScreen extends StatefulWidget{
 
   String username = "", profileURL = "",
   senderuId = "" , receiveruId = "";
-
 
   List<MessageModel> messages = [];
   ChatUserScreen({Key? key ,
@@ -46,10 +46,12 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
         .orderBy('dateTime')
         .snapshots()
         .listen((event) {
-      widget.messages = [];
+      widget.messages.clear();
       event.docs.forEach((element) {
         MessageModel model = MessageModel(element.data());
-        widget.messages.add(model);
+        setState((){
+          widget.messages.add(model);
+        });
         print("dataaaaaaaaaaaaaaa ${model.toMap()}");
         //print("dataaaaaaaaaaaaaaa ${widget.messages[0].toMap()['message']}");
         print(widget.messages.toList());
@@ -64,7 +66,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
   void initState() {
     super.initState();
     getMessages(receiverId : widget.receiveruId ,senderuId : widget.senderuId);
-    print("jiii");
+    print("super.initState()");
   }
 
   @override
@@ -85,7 +87,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                 child: CircleAvatar(
                   radius: 19,
                   child:
-                  widget.profileURL == "" ? Image.asset(
+                  widget.profileURL == null ? Image.asset(
                       "assets/blank-profile.webp",
                       scale:10.0
                   ) :Image.network(widget.profileURL),
@@ -94,7 +96,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
               SizedBox(width:10),
               Text("${widget.username}",
                 style: TextStyle(
-                    fontFamily : "SF",
+                    fontFamily : "SFn",
                     color:Colors.white
                 ),
               ),
@@ -103,7 +105,8 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
         ),
         backgroundColor: Colors.black,
         body :  Stack(
-          children: [Column(
+          children: [
+            Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -119,13 +122,22 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                           height : 550,
                           child: ListView.separated(
                               scrollDirection: Axis.vertical,
-                              itemBuilder: (context,index) =>
-                              (widget.messages[index].toMap()['senderId'].toString() == widget.senderuId
-                                  && widget.messages[index].toMap()['message'].toString().length != 0)?
-                              buildMyMessage(message : widget.messages[index].toMap()['message'].toString()):
-                              buildMessage(
-                                  message: widget.messages[index].toMap()['message'].toString()
-                              ),
+                              itemBuilder: (context,index) {
+                                if (widget.messages[index].toMap()['senderId'].toString() == widget.senderuId
+                                    && widget.messages[index].toMap()['message'].toString().length != 0) {
+
+                                     //http.get(Uri.parse("http://192.168.43.120/on"));
+                                     return buildMyMessage(message : widget.messages[index].toMap()['message'].toString());
+                                }
+                                else {
+                                  // http.get(Uri.parse("http://192.168.43.120/off"));
+                                  return buildMessage(
+                                      message: widget.messages[index]
+                                          .toMap()['message'].toString()
+                                  );
+                                }
+                              }
+                              ,
                               separatorBuilder: (context,index) => SizedBox(height:10),
                               itemCount: widget.messages.length
                           ),
@@ -204,7 +216,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                                   'message' : message.text,
                                   'dateTime' : DateTime.now().toString()
                                 });
-                                getMessages(receiverId : widget.receiveruId ,senderuId : widget.senderuId);
+                                //getMessages(receiverId : widget.receiveruId ,senderuId : widget.senderuId);
                                 message.clear();
                               },
                               child : Icon(Icons.send)

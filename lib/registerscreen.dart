@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -43,6 +45,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String gender_registered = "Male";
 
   var downloadLink ;
+  Future<File> getImageFileFromAssets(String path) async {
+    print(path);
+    final byteData = await rootBundle.load('assets/$path');
+    print(byteData);
+    final file = await File('${Directory.systemTemp.path}/$path');
+    print(file);
+    return await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));;
+  }
 
   File? imageFile , croppedImage;
 
@@ -299,25 +309,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   .doc(userCredential.user!.uid);
                               Reference reference = FirebaseStorage.instance.ref().child("images/"
                                   + DateTime.now().toString());
+                              UploadTask? uploadTask;
+                              if (croppedImage == null && uploadTask == null) {
+                                print("empty image stored $uploadTask");
+                                croppedImage = await getImageFileFromAssets('blank-profile.webp');
+                                print( "croppedImage ${croppedImage!}");
 
-                              print(croppedImage!.path);
-                              UploadTask uploadTask = reference.putFile(croppedImage!);
-
-                              uploadTask.then((res) async {
+                                uploadTask = reference.putFile(croppedImage!);
+                              }
+                              else if(croppedImage != null && uploadTask == null){
+                                uploadTask = reference.putFile(croppedImage!);
+                              }
+                              uploadTask?.then((res) async {
                                 downloadLink = await res.ref.getDownloadURL();
                                 print(downloadLink.toString());
                                 print('File Uploaded');
+
                                 users.set({
                                   "email": email.text.trim().toString(),
                                   "gender": gender_registered,
                                   "password":
                                   confirm_password.text.trim().toString(),
-                                  "profileImage" : downloadLink.toString(),
+                                  "profileImage" : downloadLink.toString() ,
                                   "username": newusername.text.trim().toString(),
                                   "uId" : userCredential.user!.uid
                                 });
                               });
-
                               await FirebaseFirestore
                                   .instance
                                   .collection('users')

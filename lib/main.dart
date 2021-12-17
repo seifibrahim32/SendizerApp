@@ -38,7 +38,7 @@ class Splash_Screen extends StatelessWidget{
     return Scaffold(
       body: SplashScreen(
           seconds: 3,
-          navigateAfterSeconds: LoginScreen(),
+          navigateAfterSeconds: SplashScreen(),
           image: Image.asset('assets/logo.png') ,
           backgroundColor: Colors.blue,
           photoSize: 150.0,

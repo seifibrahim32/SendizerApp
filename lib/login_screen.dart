@@ -41,7 +41,7 @@ class LoginScreenState extends State<LoginScreen> {
             Row(
               children: [
                 Text(
-                  'Chat with your friends online\n\n anywhere , anytime ....',
+                  'Chat with people online\n\n anywhere , anytime ....',
                   style: TextStyle(
                       fontFamily: "SF",
                       fontSize: 24,
