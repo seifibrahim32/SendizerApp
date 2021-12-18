@@ -21,6 +21,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    loggedUser = widget.user_name;
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index){
@@ -46,7 +47,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
               icon: Icon(Icons.settings)
           )
         ],),
-
       appBar : AppBar(
         title: Text(
           "${widget.user_name}",
@@ -55,8 +55,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
               fontFamily: "SF"
             )
         ),
-        centerTitle: true,
-       backgroundColor: Color(0xFF312F2F),
+          centerTitle: true,
+          backgroundColor: Color(0xFF312F2F),
         elevation: 0,
           actions:[
             Padding(

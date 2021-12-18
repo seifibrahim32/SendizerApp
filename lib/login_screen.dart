@@ -13,8 +13,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => LoginScreenState();
 }
 bool isHidden = true;
-class LoginScreenState extends State<LoginScreen> {
 
+class LoginScreenState extends State<LoginScreen> {
 
   GlobalKey<FormState> key = GlobalKey<FormState>();
 

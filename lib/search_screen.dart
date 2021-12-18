@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:social_app/reusable_data.dart';
 
 class SearchScreen extends SearchDelegate {
 
   @override
   String get searchFieldLabel => 'Search for contacts';
- 
 
   @override
   Widget buildResults(BuildContext context) {
@@ -34,8 +34,8 @@ class SearchScreen extends SearchDelegate {
   }
 
   @override
-  void showResults(BuildContext context) {
-    
+  Widget showResults(BuildContext context) {
+    return Chatlist(username: "", uId : "");
   }
   @override
   PreferredSizeWidget buildBottom(BuildContext context) {
@@ -57,9 +57,8 @@ class SearchScreen extends SearchDelegate {
           child: IconButton(
               onPressed: () {
                 query = "";
-                Navigator.pop(context);
               },
-              icon: Icon(Icons.cancel,color: Colors.white,)
+              icon: query.isEmpty?Container():Icon(Icons.cancel,color: Colors.white,)
           ),
         ),
       ),
@@ -68,8 +67,8 @@ class SearchScreen extends SearchDelegate {
 
   @override
   Widget? buildLeading(BuildContext context) {
-    Container(
-      color: Colors.orange,
+    return Container(
+      color: Color(0xFF312F2F),
       child: IconButton(
           icon : Icon(Icons.arrow_back,color: Colors.white,),
           onPressed :(){

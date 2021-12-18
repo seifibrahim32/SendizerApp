@@ -28,11 +28,11 @@ class ConverterScreen extends StatelessWidget{
     );
   }
 }
-// ChatUserScreen(doc : "Seif", profileURL:
-//     "https://www.google.com/images/brandi
-//     ng/googlelogo/2x/googlelogo_light_color_92x30dp.png",)
+
 class Splash_Screen extends StatelessWidget{
+
   const Splash_Screen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

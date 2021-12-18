@@ -223,7 +223,7 @@ final db = FirebaseFirestore.instance;
      }
  );
 
-
+String loggedUser = "";
 
 Widget buildMessage({required String message}) => Align(
   alignment: AlignmentDirectional.centerStart,
