@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_conditional_rendering/conditional.dart';
 import 'package:social_app/reusable_data.dart';
+import 'package:social_app/shared_pref.dart';
 
-//import 'package:http/http.dart' as http;
 import 'message_model.dart';
 
 class ChatUserScreen extends StatefulWidget{
@@ -80,8 +80,9 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
     print(widget.messages.length);
     return SafeArea(
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
         appBar : AppBar(
-          backgroundColor: Colors.grey,
+          backgroundColor: Color(0x1177B2EF),
           automaticallyImplyLeading: true,
           title: Row(
             children: [
@@ -109,143 +110,171 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
           ),
         ),
         backgroundColor: Colors.black,
-        body :  Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Conditional.single(
-                    conditionBuilder:
-                        (context) => widget.messages.isNotEmpty,
-                    context: context,
-                    fallbackBuilder: (context) => Center(child: CircularProgressIndicator()),
-                    widgetBuilder: (context) {
-                      return SizedBox(
-                        height : 547,
-                        child: ListView.separated(
-                            controller: _scrollController,
-                            scrollDirection: Axis.vertical,
-                            itemBuilder: (context,index) {
-                              if (widget.messages[index].toMap()['senderId'].toString() == widget.senderuId
-                                  && widget.messages[index].toMap()['message'].toString().length != 0 ) {
-                                if(index == widget.messages.length - 1) {
-                                  ref.child("Sender: ${loggedUser}").set(
-                                      widget.messages[index].toMap()['message']
-                                          .toString()
-                                  );
-                                }
-                                   //http.get(Uri.parse("http://192.168.43.120/on"));
-                                   return buildMyMessage(message : widget.messages[index].toMap()['message'].toString());
-                              }
-                              else {
-                                if(index == widget.messages.length-1) {
-                                  ref.child("Receiver: ${widget.username}").set(
-                                      widget.messages[index].toMap()['message'].toString());
-                                }
-                                // http.get(Uri.parse("http://192.168.43.120/off"));
-                                return buildMessage(
-                                    message: widget.messages[index]
-                                        .toMap()['message'].toString()
-                                );
-                              }
-                            }
-                            ,
-                            separatorBuilder: (context,index) => SizedBox(height:10),
-                            itemCount: widget.messages.length
+        body :  SingleChildScrollView(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child:
+              Column(
+                children :[
+                  Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Conditional.single(
+                            conditionBuilder:
+                                (context) => widget.messages.isNotEmpty,
+                            context: context,
+                            fallbackBuilder: (context) => Center(child: CircularProgressIndicator()),
+                            widgetBuilder: (context) {
+                              return SizedBox(
+                                height : 547,
+                                child: ListView.separated(
+                                    controller: _scrollController,
+                                    scrollDirection: Axis.vertical,
+                                    itemBuilder: (context,index) {
+                                      if (widget.messages[index].toMap()['senderId'].toString() == widget.senderuId
+                                          && widget.messages[index].toMap()['message'].toString().length != 0 ) {
+                                        if(index == widget.messages.length - 1) {
+
+                                          widget.fb.reference().remove();
+                                          /*
+                                    ref.child("Sender: ${loggedUser}").set(
+                                        widget.messages[index].toMap()['message']
+                                            .toString()
+                                    );
+
+                                     */
+                                          ref.child("message")
+                                              .child("message").set("Sender: $loggedUser "
+                                              "${widget.messages[index].toMap()['message']
+                                              .toString()}"
+                                          );
+                                        }
+                                        //http.get(Uri.parse("http://192.168.43.120/on"));
+                                        return buildMyMessage(message : widget.messages[index].toMap()['message'].toString(),context: context);
+                                      }
+                                      else {
+                                        if(index == widget.messages.length - 1) {
+                                          widget.fb.reference().remove();
+                                          /*
+                                    ref.child("Receiver: ${widget.username}").set(
+                                        widget.messages[index].toMap()['message'].toString());
+
+                                     */
+                                          ref.child("message")
+                                              .child("message").set("Receiver: ${loggedUser} "
+                                              "${widget.messages[index].toMap()['message']
+                                              .toString()}"
+                                          );
+                                        }
+                                        // http.get(Uri.parse("http://192.168.43.120/off"));
+                                        return buildMessage(
+                                            message: widget.messages[index]
+                                                .toMap()['message'].toString()
+                                            ,context: context
+                                        );
+                                      }
+                                    },
+                                    separatorBuilder: (context,index) => SizedBox(height:10),
+                                    itemCount: widget.messages.length
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                      );
-                    },
+                      ]
                   ),
-                ),
-              ]
-          ),
-            Expanded(
-              flex : 2,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration : BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius : BorderRadius.only(
-                                bottomRight: Radius.circular(0),
-                                topRight: Radius.circular(0),
-                                topLeft: Radius.circular(8),
-                                bottomLeft: Radius.circular(8)
-                            )
-                        ),
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical :5.0,horizontal:16),
-                          child: TextFormField(
-                            controller : message,
-                            decoration: InputDecoration(
-                                hintStyle: TextStyle(
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            decoration : BoxDecoration(
+                                color: Color(0x11A6CDFA),
+                                borderRadius : BorderRadius.only(
+                                    bottomRight: Radius.circular(0),
+                                    topRight: Radius.circular(0),
+                                    topLeft: Radius.circular(8),
+                                    bottomLeft: Radius.circular(8)
+                                )
+                            ),
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical :5.0,horizontal:16),
+                              child: TextFormField(
+                                style: TextStyle(
                                     fontFamily : "SF",
                                     color:Colors.white
+                                ) ,
+                                controller : message,
+                                decoration: InputDecoration(
+
+                                    fillColor : Colors.white,
+                                    hintStyle: TextStyle(
+                                        fontFamily : "SF",
+                                        color:Colors.white
+                                    ),
+                                    border: InputBorder.none,
+                                    hintText: "Type your message"
                                 ),
-                                border: InputBorder.none,
-                                hintText: "Type your message"
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    Container(
-                      height : 58,
-                      color : Colors.green[300],
-                      child : MaterialButton(
-                          elevation: 0.9,
-                          minWidth: 1.0,
-                          color: Colors.green[300],
-                          onPressed: (){
-                            FirebaseFirestore
-                                .instance
-                                .collection('users')
-                                .doc(widget.senderuId)
-                                .collection(
-                                "chats")
-                                .doc(widget.receiveruId)
-                                .collection("messages")
-                                .add({
-                              'senderId':widget.senderuId,
-                              'receiverId' : widget.receiveruId,
-                              'message' : message.text,
-                              'dateTime' : DateTime.now().toString()
-                            });
-                            FirebaseFirestore
-                                .instance
-                                .collection('users')
-                                .doc(widget.receiveruId)
-                                .collection(
-                                "chats")
-                                .doc(widget.senderuId)
-                                .collection("messages")
-                                .add({
-                              'senderId':widget.senderuId,
-                              'receiverId' : widget.receiveruId,
-                              'message' : message.text,
-                              'dateTime' : DateTime.now().toString()
-                            });
+                        Container(
+                          height : 58,
+                          color : Colors.blueAccent,
+                          child : MaterialButton(
+                              elevation: 0.9,
+                              minWidth: 1.0,
+                              color: Colors.blueAccent,
+                              onPressed: (){
+                                FirebaseFirestore
+                                    .instance
+                                    .collection('users')
+                                    .doc(widget.senderuId)
+                                    .collection(
+                                    "chats")
+                                    .doc(widget.receiveruId)
+                                    .collection("messages")
+                                    .add({
+                                  'senderId':widget.senderuId,
+                                  'receiverId' : widget.receiveruId,
+                                  'message' : message.text,
+                                  'dateTime' : DateTime.now().toString()
+                                });
+                                FirebaseFirestore
+                                    .instance
+                                    .collection('users')
+                                    .doc(widget.receiveruId)
+                                    .collection(
+                                    "chats")
+                                    .doc(widget.senderuId)
+                                    .collection("messages")
+                                    .add({
+                                  'senderId':widget.senderuId,
+                                  'receiverId' : widget.receiveruId,
+                                  'message' : message.text,
+                                  'dateTime' : DateTime.now().toString()
+                                });
 
-                            setState((){
-                              opened = true;
-                            });
-                            //getMessages(receiverId : widget.receiveruId ,senderuId : widget.senderuId);
-                            message.clear();
-                          },
-                          child : Icon(Icons.send)
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ])
+                                setState((){
+                                  opened = true;
+                                });
+                                //getMessages(receiverId : widget.receiveruId ,senderuId : widget.senderuId);
+                                message.clear();
+                              },
+                              child : Icon(Icons.send)
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ]
+              )
+            ),
+        )
       ),
     );
   }

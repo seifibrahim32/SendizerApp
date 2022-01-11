@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "F:\\Engineering_Projects\\SocialAppProject\\social_app\\build\\path_provider_android\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-pa\\values-pa.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Eng-Seif\\.gradle\\caches\\transforms-3\\d2959f90984f6c9f3b55d829540882d7\\transformed\\core-1.6.0\\res\\values-pa\\values-pa.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "F:\\Engineering_Projects\\SocialAppProject\\social_app\\build\\path_provider_android\\intermediates\\res\\merged\\debug\\values-pa\\values-pa.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Eng-Seif\\.gradle\\caches\\transforms-3\\d2959f90984f6c9f3b55d829540882d7\\transformed\\core-1.6.0\\res\\values-pa\\values-pa.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        }
+    ]
+}

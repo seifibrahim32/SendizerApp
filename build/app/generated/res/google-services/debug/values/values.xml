@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">78827706522-eb750si9omb7svj8n7cvmtne2c3o3udb.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">78827706522</string>
+    <string name="google_api_key" translatable="false">AIzaSyCJszzy6Rys8k6j1sH-lGmn77tumsrTSCE</string>
+    <string name="google_app_id" translatable="false">1:78827706522:android:4c5c6d5c1c220f22362723</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCJszzy6Rys8k6j1sH-lGmn77tumsrTSCE</string>
+    <string name="google_storage_bucket" translatable="false">sendizer-d7694.appspot.com</string>
+    <string name="project_id" translatable="false">sendizer-d7694</string>
+</resources>

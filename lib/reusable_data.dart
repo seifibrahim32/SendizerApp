@@ -6,7 +6,9 @@ import 'package:social_app/registerscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/cupertino.dart';
+import 'package:social_app/shared_pref.dart';
 
+import 'CRC_algorithm_model.dart';
 import 'chat_screen_user.dart';
 
 Widget textFormField({
@@ -225,7 +227,10 @@ final db = FirebaseFirestore.instance;
 
 String loggedUser = "";
 
-Widget buildMessage({required String message}) => Align(
+Widget buildMessage({required String message ,required BuildContext context}) {
+
+  CRC(message, "1001",context);
+  return Align(
   alignment: AlignmentDirectional.centerStart,
   child: Container(
       padding: EdgeInsets.symmetric(vertical : 5, horizontal : 10),
@@ -247,11 +252,14 @@ Widget buildMessage({required String message}) => Align(
       )
   ),
 );
+}
 
 
 
-
-Widget buildMyMessage({required String message}) => Align(
+Widget buildMyMessage({required String message,required BuildContext context}) {
+  myCRC(message,
+      SharedPrefClass?.getString(),context);
+  return Align(
   alignment: AlignmentDirectional.centerEnd,
   child: Container(
       padding: EdgeInsets.symmetric(vertical : 5, horizontal : 10),
@@ -273,3 +281,4 @@ Widget buildMyMessage({required String message}) => Align(
       )
   ),
 );
+}
